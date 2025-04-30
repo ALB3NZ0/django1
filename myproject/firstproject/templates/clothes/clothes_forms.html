@@ -1,0 +1,12 @@
+<h1>Одежда</h1>
+    <a href = "{% url 'clothes_create' %}">Добавить новую позицию на сайте</a>
+    
+    <ul>
+        {% for clothes in clothes %}
+        <li>
+            <a href = "{% url 'clothes_create' clothes.pk %}">{{clothes.name}}</a>
+            <a href = "{% url 'clothes_create' clothes.pk %}">Редактировать </a>
+            <a href = "{% url 'clothes_create' clothes.pk %}">Удалить</a>
+        </li>
+        {% endfor %}
+    </ul>

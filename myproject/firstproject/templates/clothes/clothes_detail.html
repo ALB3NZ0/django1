@@ -1,0 +1,13 @@
+<h1>{{clothes.name}}</h1>
+<p>{{clothes.description}}</p>
+<p>Цена:{{clothes.price}}</p>
+<p>Размер:{{clothes.size}}</p>
+<p>Цвет:{{clothes.color}}</p>
+<p>{% if clothes.is_exists %} Да {% else %} Нет {%endif%}</p>
+<p>{{clothes.category}}</p>
+<p>{% for collection in clothes.collection.all%} {{collection.name}} {% if not  forloop.last%}, {% endif %}{% endfor %}</p>
+<img> src="{{clothes.photo.url}}" alt="{{clothes.name}}"</img>
+
+<a href= "{% url 'clothes_list' %}"> Вернуться к списку одежды</a>
+<a href = "{% url 'clothes_create' clothes.pk %}">Редактировать </a>
+<a href = "{% url 'clothes_create' clothes.pk %}">Удалить</a>
