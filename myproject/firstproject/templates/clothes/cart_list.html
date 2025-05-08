@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+    <h1>Корзина</h1>
+    <a href="{% url 'cart_item_create' %}" class="btn btn-primary mb-3">Добавить товар в корзину</a>
+    {% for cart in carts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Корзина пользователя: {{ cart.user.username }}</h5>
+                <p>Создана: {{ cart.created_at }}</p>
+                <h6>Товары:</h6>
+                <ul>
+                    {% for item in cart.items.all %}
+                        <li>{{ item.product.name }} ({{ item.quantity }} шт.) 
+                            <a href="{% url 'cart_item_update' item.id %}" class="btn btn-sm btn-warning">Редактировать</a>
+                            <a href="{% url 'cart_item_delete' item.id %}" class="btn btn-sm btn-danger">Удалить</a>
+                        </li>
+                    {% empty %}
+                        <li>Корзина пуста.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% empty %}
+        <p>Корзин пока нет.</p>
+    {% endfor %}
+{% endblock %}

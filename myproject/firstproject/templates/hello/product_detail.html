@@ -1,43 +1,91 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="bg-white p-6 rounded-lg shadow">
-    <h1 class="text-3xl font-bold mb-4">{{ product.name }}</h1>
-    {% if product.photo %}
-    <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full max-w-md h-auto rounded mb-4">
-    {% else %}
-        <p class="text-gray-600 mb-4">Нет фото</p>
-    {% endif %}
-    <p class="text-gray-600 mb-2">Бренд: {{ product.brand.name|default:"Не указан" }}</p>
-    <p class="text-gray-600 mb-2">Цена: {{ product.price }} руб.</p>
-    <p class="text-gray-600 mb-2">Размер: {{ product.size|default:"Не указан" }}</p>
-    <p class="text-gray-600 mb-2">Материал: {{ product.material|default:"Не указан" }}</p>
-    <p class="text-gray-600 mb-2">Категория: {{ product.category.name }}</p>
-    <p class="text-gray-600 mb-2">Типы: {% for type in product.product_types.all %}{{ type.name }}{% if not forloop.last %}, {% endif %}{% empty %}Нет типов{% endfor %}</p>
-    <p class="text-gray-600 mb-2">Наличие: {{ product.stock }} шт.</p>
-    <p class="text-gray-600 mb-2">Описание: {{ product.description|default:"Нет описания" }}</p>
-    {% if features %}
-        <h2 class="text-xl font-semibold mt-4 mb-2">Характеристики</h2>
-        <ul class="list-disc pl-5">
-            {% for feature in features %}
-                <li>{{ feature.feature_name }}: {{ feature.feature_value }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    {% if product.is_available and product.stock > 0 %}
-        {% if user.is_authenticated %}
-            <form action="{% url 'add_to_cart' product.id %}" method="post" class="mt-4">
-                {% csrf_token %}
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Добавить в корзину</button>
-            </form>
-            <form action="{% url 'add_to_favorites' product.id %}" method="post" class="mt-2">
-                {% csrf_token %}
-                <button type="submit" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Добавить в избранное</button>
-            </form>
+<style>
+    /* Анимация для карточки товара */
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .product-card {
+        animation: fadeInUp 0.6s ease-out forwards;
+        transition: box-shadow 0.3s ease;
+        border-radius: 0.5rem;
+    }
+
+    .product-card:hover {
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn {
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        border-radius: 0.375rem;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .hero-bg {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        padding: 2rem 0;
+        border-radius: 0.5rem;
+    }
+</style>
+
+<div class="container mx-auto px-4 py-12">
+    <div class="bg-white p-6 rounded-lg shadow-lg product-card max-w-2xl mx-auto">
+        <div class="hero-bg text-center mb-6">
+            <h1 class="text-4xl font-bold text-gray-900">{{ product.name }}</h1>
+        </div>
+        {% if product.photo %}
+            <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full max-w-md h-auto rounded-lg mb-6 object-cover">
         {% else %}
-            <p class="text-gray-600 mt-4">Войдите, чтобы добавить товар в корзину или избранное.</p>
+            <p class="text-gray-600 mb-6 text-center">Нет фото</p>
         {% endif %}
-    {% else %}
-        <p class="text-red-600 mt-4">Товар недоступен</p>
-    {% endif %}
+        <div class="space-y-4">
+            <p class="text-gray-700"><span class="font-semibold">Бренд:</span> {{ product.brand.name|default:"Не указан" }}</p>
+            <p class="text-gray-700"><span class="font-semibold">Цена:</span> <span class="text-blue-600 font-bold">{{ product.price }} руб.</span></p>
+            <p class="text-gray-700"><span class="font-semibold">Размер:</span> {{ product.size|default:"Не указан" }}</p>
+            <p class="text-gray-700"><span class="font-semibold">Материал:</span> {{ product.material|default:"Не указан" }}</p>
+            <p class="text-gray-700"><span class="font-semibold">Категория:</span> {{ product.category.name }}</p>
+            <p class="text-gray-700"><span class="font-semibold">Типы:</span> {% for type in product.product_types.all %}{{ type.name }}{% if not forloop.last %}, {% endif %}{% empty %}Нет типов{% endfor %}</p>
+            <p class="text-gray-700"><span class="font-semibold">Наличие:</span> {{ product.stock }} шт.</p>
+            <p class="text-gray-700"><span class="font-semibold">Описание:</span> {{ product.description|default:"Нет описания" }}</p>
+        </div>
+        {% if features %}
+            <h2 class="text-2xl font-semibold text-gray-900 mt-6 mb-4">Характеристики</h2>
+            <ul class="list-disc pl-6 space-y-2">
+                {% for feature in features %}
+                    <li class="text-gray-700">{{ feature.feature_name }}: {{ feature.feature_value }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if product.is_available and product.stock > 0 %}
+            {% if user.is_authenticated %}
+                <div class="mt-6 space-y-4">
+                    <form action="{% url 'add_to_cart' product.id %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Добавить в корзину</button>
+                    </form>
+                    <form action="{% url 'add_to_favorites' product.id %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700">Добавить в избранное</button>
+                    </form>
+                </div>
+            {% else %}
+                <p class="text-gray-600 mt-6 text-center">Войдите, чтобы добавить товар в корзину или избранное.</p>
+            {% endif %}
+        {% else %}
+            <p class="text-red-600 mt-6 text-center font-semibold">Товар недоступен</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

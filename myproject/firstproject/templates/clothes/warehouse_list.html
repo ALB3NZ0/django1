@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Склады{% endblock %}
+
+{% block content %}
+    <h1>Склады</h1>
+    <a href="{% url 'warehouse_create' %}" class="btn btn-primary mb-3">Добавить склад</a>
+    <ul>
+        {% for warehouse in warehouses %}
+            <li>{{ warehouse.name }} ({{ warehouse.address }})
+                <a href="{% url 'warehouse_update' warehouse.id %}" class="btn btn-sm btn-warning">Редактировать</a>
+                <a href="{% url 'warehouse_delete' warehouse.id %}" class="btn btn-sm btn-danger">Удалить</a>
+            </li>
+        {% empty %}
+            <p>Складов пока нет.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

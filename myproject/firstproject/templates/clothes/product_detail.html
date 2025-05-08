@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Товар: {{ product.name }}{% endblock %}
+
+{% block content %}
+    <h1>{{ product.name }}</h1>
+    <div class="row">
+        <div class="col-md-6">
+            {% if product.photo %}
+                <img src="{{ product.photo.url }}" class="img-fluid" alt="{{ product.name }}">
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <p><strong>Описание:</strong> {{ product.description }}</p>
+            <p><strong>Цена:</strong> {{ product.price }} руб.</p>
+            <p><strong>Размер:</strong> {{ product.size }}</p>
+            <p><strong>Материал:</strong> {{ product.material }}</p>
+            <p><strong>На складе:</strong> {{ product.stock }}</p>
+            <p><strong>Доступен:</strong> {{ product.is_available|yesno:"Да,Нет" }}</p>
+            <p><strong>Категория:</strong> {{ product.category.name }}</p>
+            <p><strong>Бренд:</strong> {{ product.brand.name }}</p>
+            <p><strong>Типы:</strong>
+                {% for type in product.product_types.all %}
+                    {{ type.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <a href="{% url 'product_update' product.id %}" class="btn btn-warning">Редактировать</a>
+            <a href="{% url 'product_delete' product.id %}" class="btn btn-danger">Удалить</a>
+            <a href="{% url 'product_list' %}" class="btn btn-secondary">Назад</a>
+        </div>
+    </div>
+{% endblock %}

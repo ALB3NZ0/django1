@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Движения стока{% endblock %}
+
+{% block content %}
+    <h1>Движения стока</h1>
+    <a href="{% url 'stock_movement_create' %}" class="btn btn-primary mb-3">Добавить движение</a>
+    <ul>
+        {% for movement in stock_movements %}
+            <li>{{ movement.movement_type }}: {{ movement.quantity }} x {{ movement.product.name }} ({{ movement.warehouse.name }})
+                {% if movement.destination_warehouse %}
+                    → {{ movement.destination_warehouse.name }}
+                {% endif %}
+                <a href="{% url 'stock_movement_delete' movement.id %}" class="btn btn-sm btn-danger">Удалить</a>
+            </li>
+        {% empty %}
+            <p>Движений стока пока нет.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

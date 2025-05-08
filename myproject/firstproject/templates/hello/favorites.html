@@ -1,100 +1,78 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Избранное</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        .product-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-        .nav-link {
-            transition: color 0.2s ease, background-color 0.2s ease;
-        }
-        .nav-link:hover {
-            color: #1d4ed8;
-            background-color: #f1f5f9;
-        }
-        .navbar {
-            background: linear-gradient(to right, #1e3a8a, #3b82f6);
-        }
-        .btn {
-            transition: background-color 0.2s ease, transform 0.2s ease;
-        }
-        .btn:hover {
-            transform: scale(1.05);
-        }
-    </style>
-</head>
-<body class="bg-gray-100 font-sans">
-    <nav class="navbar p-4 text-white">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="{% url 'index' %}" class="text-2xl font-bold">Спортивный магазин</a>
-            <div class="space-x-4">
-                <a href="{% url 'product_list' %}" class="nav-link px-3 py-2 rounded">Каталог</a>
-                <a href="{% url 'second' %}" class="nav-link px-3 py-2 rounded">О нас</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'cart_view' %}" class="nav-link px-3 py-2 rounded">Корзина</a>
-                    <a href="{% url 'favorites_view' %}" class="nav-link px-3 py-2 rounded">Избранное</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="nav-link px-3 py-2 rounded">Войти</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
+{% extends 'base.html' %}
 
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">Избранное</h1>
+{% block content %}
+<div class="main-content container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-center text-gray-800 mt-12 mb-8">Избранное</h1>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="product-list">
-            {% if favorites %}
-                {% for favorite in favorites %}
-                    <div class="product-card bg-white rounded-lg shadow-lg p-4">
-                        {% if favorite.product.image_url %}
-                            <img src="{{ favorite.product.image_url }}" alt="{{ favorite.product.name }}" class="w-full h-48 object-cover rounded-t-lg">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="product-list">
+        {% if favorites %}
+            {% for favorite in favorites %}
+                <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+                    <div class="relative">
+                        {% if favorite.product.photo %}
+                            <img src="{{ favorite.product.photo.url }}" alt="{{ favorite.product.name }}" class="w-full h-64 object-cover rounded-t-lg">
                         {% else %}
-                            <img src="https://source.unsplash.com/300x200/?sports,{{ favorite.product.name|urlencode }}" alt="{{ favorite.product.name }}" class="w-full h-48 object-cover rounded-t-lg">
+                            <div class="no-image-placeholder rounded-t-lg">Нет фото</div>
                         {% endif %}
-                        <h3 class="text-xl font-semibold text-gray-800 mt-4">{{ favorite.product.name }}</h3>
-                        <p class="text-gray-600">{{ favorite.product.price }} руб.</p>
-                        <p class="text-gray-500 text-sm">Категория: {{ favorite.product.category.name }}</p>
-                        <div class="mt-4 space-y-2">
-                            <a href="{% url 'product_detail' favorite.product.id %}" class="btn block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-center">Подробнее</a>
+                        <div class="absolute top-2 left-2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded">Новинка</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ favorite.product.name|default:"Название не указано" }}</h3>
+                        <p class="text-gray-600 mb-1">Цена: <span class="font-medium">{{ favorite.product.price|default:"Не указана" }} руб.</span></p>
+                        <p class="text-gray-500 text-sm mb-1">Категория: {{ favorite.product.category.name|default:"Не указана" }}</p>
+                        <div class="mt-4 flex space-x-2">
+                            <a href="{% url 'product_detail' favorite.product.id %}" class="btn block w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-center">Подробнее</a>
+                            <a href="{% url 'add_to_cart' favorite.product.id %}" class="btn block w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-center">Добавить в корзину</a>
+                            <button class="btn-delete-favorite block w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-center" data-favorite-id="{{ favorite.id }}">Удалить</button>
                         </div>
                     </div>
-                {% empty %}
-                    <p class="col-span-full text-center text-gray-600">У вас нет избранных товаров</p>
-                {% endfor %}
-            {% else %}
-                <div class="product-card bg-white rounded-lg shadow-lg p-4">
-                    <img src="https://source.unsplash.com/300x200/?football" alt="Футбольный мяч" class="w-full h-48 object-cover rounded-t-lg">
-                    <h3 class="text-xl font-semibold text-gray-800 mt-4">Футбольный мяч</h3>
-                    <p class="text-gray-600">1500 руб.</p>
-                    <p class="text-gray-500 text-sm">Категория: Футбол</p>
-                    <div class="mt-4 space-y-2">
-                        <a href="{% url 'product_detail' 1 %}" class="btn block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-center">Подробнее</a>
-                    </div>
                 </div>
-                <div class="product-card bg-white rounded-lg shadow-lg p-4">
-                    <img src="https://source.unsplash.com/300x200/?judo" alt="Кимоно для дзюдо" class="w-full h-48 object-cover rounded-t-lg">
-                    <h3 class="text-xl font-semibold text-gray-800 mt-4">Кимоно для дзюдо</h3>
-                    <p class="text-gray-600">5000 руб.</p>
-                    <p class="text-gray-500 text-sm">Категория: Дзюдо</p>
-                    <div class="mt-4 space-y-2">
-                        <a href="{% url 'product_detail' 3 %}" class="btn block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-center">Подробнее</a>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="flex justify-center mt-8">
-            <a href="{% url 'product_list' %}" class="nav-link px-4 py-2 text-blue-500 hover:text-blue-700 font-semibold">Вернуться к каталогу</a>
-        </div>
+            {% empty %}
+                <p class="col-span-full text-center text-gray-600">У вас нет избранных товаров</p>
+            {% endfor %}
+        {% else %}
+            <p class="col-span-full text-center text-gray-600">У вас нет избранных товаров</p>
+        {% endif %}
     </div>
-</body>
-</html>
+
+    <div class="flex justify-center mt-8">
+        <a href="{% url 'product_list' %}" class="nav-link px-4 py-2 text-blue-500 hover:text-blue-700 font-semibold">Вернуться к каталогу</a>
+    </div>
+</div>
+
+
+<script>
+    document.querySelectorAll('.btn-delete-favorite').forEach(button => {
+        button.addEventListener('click', () => {
+            const favoriteId = button.dataset.favoriteId;
+
+            fetch(`/favorites/delete/${favoriteId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const card = button.closest('.product-card');
+                    card.remove();
+
+                    // Если избранное стало пустым — показать сообщение
+                    if (document.querySelectorAll('.product-card').length === 0) {
+                        document.getElementById('product-list').innerHTML = '<p class="col-span-full text-center text-gray-600">У вас нет избранных товаров</p>';
+                    }
+                } else {
+                    alert('Ошибка при удалении: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при удалении');
+            });
+        });
+    });
+</script>
+
+{% endblock %}

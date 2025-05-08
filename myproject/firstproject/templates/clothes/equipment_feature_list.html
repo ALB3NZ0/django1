@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Характеристики оборудования{% endblock %}
+
+{% block content %}
+    <h1>Характеристики оборудования</h1>
+    <a href="{% url 'equipment_feature_create' %}" class="btn btn-primary mb-3">Добавить характеристику</a>
+    <ul>
+        {% for feature in equipment_features %}
+            <li>{{ feature.feature_name }}: {{ feature.feature_value }} ({{ feature.product.name }})
+                <a href="{% url 'equipment_feature_update' feature.id %}" class="btn btn-sm btn-warning">Редактировать</a>
+                <a href="{% url 'equipment_feature_delete' feature.id %}" class="btn btn-sm btn-danger">Удалить</a>
+            </li>
+        {% empty %}
+            <p>Характеристик пока нет.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

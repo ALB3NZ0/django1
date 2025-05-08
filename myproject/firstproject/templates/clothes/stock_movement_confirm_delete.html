@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Удалить движение стока{% endblock %}
+
+{% block content %}
+    <h1>Удалить движение стока</h1>
+    <p>Вы уверены, что хотите удалить это движение стока?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <a href="{% url 'stock_movement_list' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+{% endblock %}

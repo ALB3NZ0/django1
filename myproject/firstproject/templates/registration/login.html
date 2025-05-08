@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="main-content container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-center text-gray-800 mt-12 mb-8">Добро пожаловать</h1>
+
+    {% if messages %}
+        <div class="mb-4 max-w-md mx-auto">
+            {% for message in messages %}
+                <div class="flex items-center gap-2 bg-{% if message.tags == 'success' %}green-100{% else %}red-100{% endif %} border border-{% if message.tags == 'success' %}green-400{% else %}red-400{% endif %} text-{% if message.tags == 'success' %}green-700{% else %}red-700{% endif %} px-4 py-3 rounded" role="alert">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="{% if message.tags == 'success' %}M5 13l4 4L19 7{% else %}M6 18L18 6M6 6l12 12{% endif %}"></path>
+                    </svg>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md space-y-6">
+        {% csrf_token %}
+        <div>
+            <label for="{{ form.login.id_for_label }}" class="block text-gray-700 font-medium mb-1">Email или имя пользователя</label>
+            {% render_field form.login class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %}
+            {% for error in form.login.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            <label for="{{ form.password.id_for_label }}" class="block text-gray-700 font-medium mb-1">Пароль</label>
+            {% render_field form.password class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %}
+            {% for error in form.password.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
+            Войти
+        </button>
+    </form>
+
+    <div class="text-center mt-6">
+        <p class="text-gray-600">Нет аккаунта? <a href="{% url 'register' %}" class="text-blue-600 hover:underline">Создать аккаунт</a></p>
+    </div>
+</div>
+{% endblock %}

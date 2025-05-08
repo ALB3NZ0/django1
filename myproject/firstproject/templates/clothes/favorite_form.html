@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Избранное{% endblock %}
+
+{% block content %}
+    <h1>Избранное</h1>
+    <a href="{% url 'favorite_create' %}" class="btn btn-primary mb-3">Добавить в избранное</a>
+    <ul>
+        {% for favorite in favorites %}
+            <li>{{ favorite.product.name }} (добавлено: {{ favorite.added_at }})
+                <a href="{% url 'favorite_delete' favorite.id %}" class="btn btn-sm btn-danger">Удалить</a>
+            </li>
+        {% empty %}
+            <p>Избранных товаров пока нет.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

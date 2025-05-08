@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить движение стока{% endblock %}
+
+{% block content %}
+    <h1>Добавить движение стока</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="{% url 'stock_movement_list' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+{% endblock %}

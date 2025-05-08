@@ -6,12 +6,12 @@ MAX_LENGTH = 255
 
 # Старые модели (игнорируем)
 class Category(models.Model):
-    name = models.CharField(max_length=MAX_LENGTH, verbose_name='Наименование категории')
+    name = models.CharField(max_length=MAX_LENGTH, verbose_name='Наименование категориииии')
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
 
     class Meta:
         verbose_name = 'Категория'
-        verbose_name_plural = 'Категории'
+        verbose_name_plural = 'Категорииииии'
 
     def __str__(self):
         return self.name
@@ -33,7 +33,7 @@ class Clothes(models.Model):
     price = models.FloatField(verbose_name='Цена')
     size = models.PositiveSmallIntegerField(default=36, verbose_name='Размер')
     color = models.CharField(max_length=MAX_LENGTH, verbose_name='Цвет')
-    photo = models.ImageField(upload_to='image/%Y/%m/%d', null=True, blank=True, verbose_name='Изображение')
+    photo = models.ImageField(upload_to='', null=True, blank=True, verbose_name='Изображение')
     create_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
     is_exists = models.BooleanField(default=True, verbose_name='Доступность к заказу')
 
@@ -88,7 +88,7 @@ class SportProduct(models.Model):
     size = models.CharField(max_length=MAX_LENGTH, null=True, blank=True, verbose_name='Размер')
     material = models.CharField(max_length=MAX_LENGTH, null=True, blank=True, verbose_name='Материал')
     stock = models.PositiveSmallIntegerField(default=0, verbose_name='Количество на складе')
-    photo = models.ImageField(upload_to='', null=True, blank=True, verbose_name='Изображение')
+    photo = models.ImageField(upload_to='products/', null=True, blank=True, verbose_name='Изображение')
     create_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
     is_available = models.BooleanField(default=True, verbose_name='Доступность к заказу')
 
@@ -183,3 +183,33 @@ class EquipmentFeature(models.Model):
 
     def __str__(self):
         return f"{self.feature_name}: {self.feature_value} для {self.product.name}"
+
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    email = models.EmailField(max_length=255, verbose_name='Электронная почта')
+    phone = models.CharField(max_length=20, verbose_name='Телефон')
+    address = models.TextField(verbose_name='Адрес доставки')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    total_price = models.FloatField(verbose_name='Общая стоимость', default=0.0)
+    status = models.CharField(max_length=50, default='pending', verbose_name='Статус')
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+
+    def __str__(self):
+        return f'Заказ {self.id} от {self.user.username}'
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name='Заказ')
+    product = models.ForeignKey('SportProduct', on_delete=models.CASCADE, verbose_name='Товар')
+    quantity = models.PositiveSmallIntegerField(verbose_name='Количество')
+    price = models.FloatField(verbose_name='Цена за единицу')
+
+    class Meta:
+        verbose_name = 'Элемент заказа'
+        verbose_name_plural = 'Элементы заказа'
+
+    def __str__(self):
+        return f'{self.quantity} x {self.product.name} в заказе {self.order.id}'

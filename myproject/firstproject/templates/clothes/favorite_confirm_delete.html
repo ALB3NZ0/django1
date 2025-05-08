@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Удалить из избранного{% endblock %}
+
+{% block content %}
+    <h1>Удалить из избранного</h1>
+    <p>Вы уверены, что хотите удалить "{{ object.product.name }}" из избранного?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <a href="{% url 'favorite_list' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+{% endblock %}
